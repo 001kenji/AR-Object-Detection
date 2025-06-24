@@ -1,6 +1,7 @@
 # Sales Coach AI
 
-![Project Banner]![alt text](public/apple-touch-icon.png)
+![Project Banner](public/apple-touch-icon.png)
+
 An AI-powered sales assistant that helps sales professionals conduct more effective phone conversations by providing real-time response suggestions, call opening/closing techniques, and sales strategy guidance.
 
 ## ✨ Features
