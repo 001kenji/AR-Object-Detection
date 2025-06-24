@@ -1,0 +1,83 @@
+@plugin "daisyui";
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* TAILWIND CUSTOM VARIABLES */
+@theme {
+  --breakpoint-xs: '320px';
+  --shadow-xs: 0px 0px 8px 1px rgba(0, 0, 0, 0.25);
+
+}
+
+
+/* Add smooth transitions for the carousel */
+.transition-smooth {
+  transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Style for the dot indicators */
+.dot-indicator {
+  transition: all 0.3s ease;
+}
+
+
+
+/* audio file beautifier */
+.audio-player {
+  height: 40px;
+}
+
+.audio-player::-webkit-media-controls-panel {
+  background-color: slategray;
+  border-radius: 8px;
+  color: black;
+}
+
+.audio-player::-webkit-media-controls-play-button,
+.audio-player::-webkit-media-controls-mute-button {
+  border-radius: 50%;
+  background-color: #3b82f6;
+  color: white;
+}
+
+.audio-player::-webkit-media-controls-current-time-display,
+.audio-player::-webkit-media-controls-time-remaining-display {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  color: black;
+}
+
+
+
+
+
+
+
+
+
+/*  */
+
+::-webkit-scrollbar {
+  width: 8px; /* width of the scrollbar */
+  height: 10px; /* height of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f0f0f0; /* color of the scrollbar track */
+  border-radius: 10px; /* rounded corners for the track */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #aaa; /* color of the scrollbar thumb */
+  border-radius: 10px; /* rounded corners for the thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #666; /* color of the scrollbar thumb on hover */
+}
+
+/* Making the scrollbar visible
+body {
+  overflow-y: scroll; /* making the scrollbar visible 
+} */
+
