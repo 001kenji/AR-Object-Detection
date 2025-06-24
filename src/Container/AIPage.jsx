@@ -5,9 +5,7 @@ import { CiSettings } from "react-icons/ci";
 import { connect, useDispatch } from "react-redux";
 import {useSelector} from 'react-redux'
 import {  toast } from 'react-toastify';
-import 'react-quill/dist/quill.snow.css';
 import { FaMicrophone } from "react-icons/fa";
-import "video-react/dist/video-react.css";
 import ClientIcon from '../assets/images/client.png'
 import SalesPersonIcon from '../assets/images/support.png'
 import { CiPlay1 } from "react-icons/ci";
@@ -199,6 +197,7 @@ const AIPage = ({isAuthenticated}) => {
                     Avoid sounding robotic or aggressive.This is the details about he salesperson and what he's selling: ${getValues('ConfigurationDescription')}
                     `}]
         }
+    const [showGuid,SetshowGuid] = useState(true)
     const [RolePlaying,SetRolePlaying] = useState([
         AIConfigurationText
       ]) 
@@ -317,8 +316,11 @@ const AIPage = ({isAuthenticated}) => {
             SetReload((e) => !e)
         } catch (err) {
             ShowToast('warning',err.message)
-            SetIsLoading(false)
+            
           console.error()
+        }finally{
+            SetIsLoading(false)
+           
         }
       }
       
@@ -347,6 +349,7 @@ const AIPage = ({isAuthenticated}) => {
     function ClearChatRecord () {
         SetChatlist([])
         SetRolePlaying([AIConfigurationText])
+        SetshowGuid(true)
     }
 
     function StartConversation () { 
@@ -354,6 +357,8 @@ const AIPage = ({isAuthenticated}) => {
             role : 'user',
             parts :  [{ text : `the salesperson has called a client. Provide what the salesperson should say at the beggining of a call?`}],
         }
+        SetshowGuid(false)
+        SetIsLoading(true)
         var rolelist = RolePlaying
         rolelist.push(clientRole)
         SetRolePlaying(rolelist)
@@ -364,6 +369,8 @@ const AIPage = ({isAuthenticated}) => {
             role : 'user',
             parts :  [{ text : `the salesperson is about to end the sales call. Provide what the salesperson should say to the client at the end of the call.?`}],
         }
+        SetshowGuid(false)
+        SetIsLoading(true)
         var rolelist = RolePlaying
         rolelist.push(clientRole)
         SetRolePlaying(rolelist)
@@ -496,7 +503,7 @@ const AIPage = ({isAuthenticated}) => {
                     {/* conversation container */}
                     <div className={` bg-white/50 min-h-[500px] h-fit dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-2 shadow-lg border border-gray-200 dark:border-gray-700 `}  >
                         {/* guide information before a chat is started */}
-                        <div className={`${Chatlist.length === 0 ? 'block' : 'hidden'} p-6 bg-white dark:bg-slate-800 rounded-lg shadow-md border border-gray-200 dark:border-slate-700 max-w-3xl mx-auto my-8`}>
+                        <div className={`${Chatlist.length === 0 && showGuid == true ? 'block' : 'hidden'} p-6 bg-white dark:bg-slate-800 rounded-lg shadow-md border border-gray-200 dark:border-slate-700 max-w-3xl mx-auto my-8`}>
                             <div className="text-center mb-8">
                                 <svg className="w-16 h-16 mx-auto text-sky-500 dark:text-sky-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>

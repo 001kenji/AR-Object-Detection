@@ -6,8 +6,6 @@ import {useSelector} from 'react-redux'
 import { IoMdAdd } from "react-icons/io";
 import { IoSunny } from "react-icons/io5";
 import { BsMoonStarsFill } from "react-icons/bs";
-import 'react-quill/dist/quill.snow.css';
-//hashing using bcrypt for javascript only and not py
 import { TiThMenuOutline } from "react-icons/ti";
 
 import { PageToogleReducer, ToogleTheme } from "../actions/types.jsx";
@@ -16,8 +14,6 @@ import AIPage from './AIPage.jsx'
 import Notifier from "../Components/notifier.jsx";
 
 import Pricing from "./ContactMe.jsx";
-// using argon2 pashing for both javascript and py
-//const argon2 = require('argon2');
 const Home = ({}) => {
     const { page, extrainfo } = useParams();
     const dispatch = useDispatch()
