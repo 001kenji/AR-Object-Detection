@@ -315,7 +315,13 @@ const AIPage = ({isAuthenticated}) => {
             SetRolePlaying(rolelist)
             SetReload((e) => !e)
         } catch (err) {
-            ShowToast('warning',err.message)
+            var mess = String(err.message)
+            if(mess.match('429')){
+                ShowToast('warning','Unfortunately, due to high AI usage traffic, today\'s limit has been reached. Please try again later.')
+            }else {
+                ShowToast('warning',err.message)
+            }
+           
             
           console.error()
         }finally{
