@@ -768,8 +768,8 @@ const AIPage = ({isAuthenticated}) => {
                             <span  data-tip="Loading"  className= {` ${IsLoading ? 'loading loading-dots' : ' invisible'} transition-all duration-200 sticky top-0 tooltip cursor-pointer mx-auto my-2 bg-slate-600  loading-md `}></span>
                         
                             {/* pause button while playing audio */}
-                            <div onClick={cancel}  data-tip='pause audio'  className={` ${speaking ? 'flex flex-row' :  'hidden' } tooltip cursor-pointer tooltip-top gap-3 sticky bottom-1 left-1 ring-[1px] dark:ring-amber-600 ring-red-400 bg-slate-800 dark:bg-slate-700 w-[100px] max-w-[100px] h-[100px] max-h-[100px] p-3 rounded-md `} >
-                                <small className=" opacity-80 text-white dark:text-white italic" >pause</small>
+                            <div onClick={cancel}  data-tip='pause audio'  className={` ${speaking ? 'flex flex-row' :  'hidden' } tooltip cursor-pointer tooltip-top gap-3 sticky bottom-1 left-1 ring-[1px] dark:ring-amber-600 ring-red-400 bg-slate-800 dark:bg-slate-700 w-[100px] max-w-[100px] h-[40px] max-h-[40px] p-3 rounded-md `} >
+                                <small className=" opacity-80 text-white my-auto h-fit dark:text-white italic" >pause</small>
                                 <button  >
                                     <CiPause1    className=" text-white opacity-100 dark:text-white transition-all duration-200 cursor-pointer " />
                                 </button>   
