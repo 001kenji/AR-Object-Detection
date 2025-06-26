@@ -53,6 +53,7 @@ const UseSpeechRecognition = () => {
 
     return {
         RecordedHooktext,
+        setRecordedHooktext,
         isListening,
         startRecording,
         stopRecording,

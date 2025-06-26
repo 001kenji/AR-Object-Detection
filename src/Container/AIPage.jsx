@@ -8,9 +8,9 @@ import {  toast } from 'react-toastify';
 import { FaMicrophone } from "react-icons/fa";
 import ClientIcon from '../assets/images/client.png'
 import SalesPersonIcon from '../assets/images/support.png'
-import { CiPlay1 } from "react-icons/ci";
+import { CiPlay1,CiPause1  } from "react-icons/ci";
 import UseSpeechRecognition from "../Components/speechRecognition.jsx";
-// import usePollinationsTextGen from "../Components/aiRequest.jsx";
+import { useSpeechSynthesis } from 'react-speech-kit';
 import useGeminiTextGen from "../Components/aiRequest.jsx";
 // lottieflow animated icons 
 import Notifier from "../Components/notifier.jsx";
@@ -89,6 +89,7 @@ const AIPage = ({isAuthenticated}) => {
     })
     const {
         RecordedHooktext,
+        setRecordedHooktext,
         isListening,
         startRecording,
         stopRecording,
@@ -103,6 +104,13 @@ const AIPage = ({isAuthenticated}) => {
     const [MikeContainer,SetMikeContainer] = useState({
         'isRecording' : false
     })
+    const [TTSConfigurations,SetTTSConfigurations] = useState({
+        rate : 1.3, // Speed 
+        pitch : 1, // Pitch
+        volume : 1,
+        voice : 2
+    })
+    const {speak, cancel, speaking, supported, voices} = useSpeechSynthesis()
     const Theme = useSelector((state)=> state.auth.Theme)  
     const [ShowAdvancedConfigurations,SetShowAdvancedConfigurations] = useState(false)
     const [Reload,SetReload] = useState(false)
@@ -194,13 +202,40 @@ const AIPage = ({isAuthenticated}) => {
 
                         Upsell/Cross-sell ("Since you loved X, you’ll need Y to maximize results.").
                         '
-                    Avoid sounding robotic or aggressive.This is the details about he salesperson and what he's selling: ${getValues('ConfigurationDescription')}
+                    Avoid sounding robotic or aggressive, avoid sending multiple options just send the best one.This is the details about he salesperson and what he's selling: ${getValues('ConfigurationDescription')}
                     `}]
         }
     const [showGuid,SetshowGuid] = useState(true)
     const [RolePlaying,SetRolePlaying] = useState([
         AIConfigurationText
       ]) 
+
+
+    useEffect(() => {
+        if(localStorage.getItem('Chatlist') != null && localStorage.getItem('Chatlist') != 'null' && localStorage.getItem('Chatlist') != 'undefined'){
+            
+            var chatliststorage = JSON.parse(localStorage.getItem('Chatlist'))
+            var RolePlayingstorage = JSON.parse(localStorage.getItem('RolePlaying'))
+            SetChatlist(chatliststorage)
+            SetRolePlaying(RolePlayingstorage)
+        }
+
+        if(localStorage.getItem('TTSConfigurations') != null && localStorage.getItem('TTSConfigurations') != 'null' && localStorage.getItem('TTSConfigurations') != 'undefined'){
+            var storageComfig = JSON.parse(localStorage.getItem('TTSConfigurations'))
+            SetTTSConfigurations((e) => {
+                return {
+                    'pitch' : storageComfig.pitch || 1,
+                    'rate' : storageComfig.rate || 1.3,
+                    'voice' : storageComfig.voice || 2,
+                    'volume' : storageComfig.volume || 1
+                }
+            })
+        }else{
+            localStorage.setItem('TTSConfigurations',JSON.stringify(TTSConfigurations))
+        }
+            
+            
+    },[])
 
     useEffect(() => {
         // console.log('changes detected')
@@ -217,6 +252,7 @@ const AIPage = ({isAuthenticated}) => {
             var listval = Chatlist
             listval.push(dataval)
             SetChatlist(listval)
+            localStorage.setItem('Chatlist',JSON.stringify(listval))
             SetReload((e) => !e)
             // console.log('added',RecordedHooktext)
             // //making request to ai
@@ -227,8 +263,11 @@ const AIPage = ({isAuthenticated}) => {
             var rolelist = RolePlaying
             rolelist.push(clientRole)
             SetRolePlaying(rolelist)
+            localStorage.setItem('RolePlaying',JSON.stringify(rolelist))
             SetIsLoading(true)
             handleSubmitAiRequest(rolelist)
+
+            setRecordedHooktext('')
         }
     },[RecordedHooktext])
 
@@ -263,6 +302,18 @@ const AIPage = ({isAuthenticated}) => {
         return null;
     }
 
+    function TextToSpeech(text) {
+        
+        speak({ 
+            text: text, 
+            rate: TTSConfigurations.rate,
+            pitch : TTSConfigurations.pitch,
+            volume : TTSConfigurations.volume,
+            voice : voices[TTSConfigurations.voice]
+        
+        })
+      }
+
     const MapChatMesseger = Chatlist.map((items,i) => {
        
         return (
@@ -282,8 +333,8 @@ const AIPage = ({isAuthenticated}) => {
                     </blockquote> 
                    
                 </div> 
-                <div className={` w-fit mr-auto my-auto ${items.email != UserEmail ? 'flex' : 'hidden'} transition-all duration-200 text-lg flex-row gap-2 ml-4 invisible group-hover:visible flex-wrap max-w-xs`} >
-                        <button data-tip='Play audio' className={` tooltip tooltip-top`} >
+                <div className={` w-fit mr-auto mt-auto sticky bottom-0 flex transition-all duration-200 text-lg flex-row gap-2 ml-4 invisible group-hover:visible flex-wrap max-w-xs`} >
+                        <button onClick={() =>TextToSpeech(items.text) } data-tip='Play audio' className={` tooltip tooltip-top`} >
                             <CiPlay1   className=" dark:text-slate-400 text-slate-600 hover:text-slate-800 dark:hover:text-slate-200 transition-all duration-200 cursor-pointer " />
                         </button>                       
                 </div>  
@@ -306,6 +357,7 @@ const AIPage = ({isAuthenticated}) => {
             var listval = Chatlist
             listval.push(dataval)
             SetChatlist(listval)
+            localStorage.setItem('Chatlist',JSON.stringify(listval))
             var clientRole = {
                 role : 'model',
                 parts : [{text : RecordedHooktext}]
@@ -313,6 +365,7 @@ const AIPage = ({isAuthenticated}) => {
             var rolelist = RolePlaying
             rolelist.push(clientRole)
             SetRolePlaying(rolelist)
+            localStorage.setItem('RolePlaying',JSON.stringify(rolelist))
             SetReload((e) => !e)
         } catch (err) {
             var mess = String(err.message)
@@ -355,13 +408,15 @@ const AIPage = ({isAuthenticated}) => {
     function ClearChatRecord () {
         SetChatlist([])
         SetRolePlaying([AIConfigurationText])
+        localStorage.setItem('RolePlaying','undefined')
+        localStorage.setItem('Chatlist','undefined')
         SetshowGuid(true)
     }
 
     function StartConversation () { 
         var clientRole = {
             role : 'user',
-            parts :  [{ text : `the salesperson has called a client. Provide what the salesperson should say at the beggining of a call?`}],
+            parts :  [{ text : `the salesperson has called a client. Provide what the salesperson should say at the beggining of a call? and make it short `}],
         }
         SetshowGuid(false)
         SetIsLoading(true)
@@ -373,7 +428,7 @@ const AIPage = ({isAuthenticated}) => {
     function EndConversation () { 
         var clientRole = {
             role : 'user',
-            parts :  [{ text : `the salesperson is about to end the sales call. Provide what the salesperson should say to the client at the end of the call.?`}],
+            parts :  [{ text : `the salesperson is about to end the sales call. Provide what the salesperson should say to the client at the end of the call.? and make it short`}],
         }
         SetshowGuid(false)
         SetIsLoading(true)
@@ -412,8 +467,20 @@ const AIPage = ({isAuthenticated}) => {
             }
             return null;
     }
+
+    const ToongleSpeechSettings = (event) => {
+        const {name, value} = event.target 
+        // console.log(name,value)
+        SetTTSConfigurations((e) => {
+            return {
+                ...e,
+                [name] : value
+            }
+        })
+        localStorage.setItem('TTSConfigurations',JSON.stringify(TTSConfigurations))
+    }
   
-    //videos of birds, others are eagles, parots, flamingos and other more
+   
 
     return (
         <div className={` h-full  bg-transparent  py-4  overflow-x-hidden w-full overflow-y-auto relative min-w-full max-w-[100%] flex flex-col justify-between  `} >
@@ -444,35 +511,38 @@ const AIPage = ({isAuthenticated}) => {
                             <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="ConfigurationDescription">
                                 Description
                             </label>
-                            <small className="text-xs text-gray-500 dark:text-gray-400 italic">
-                                Example: "I'm a sales rep for TechCorp selling cloud storage solutions to small businesses..."
-                            </small>
-                            <small className="text-xs text-gray-500 dark:text-gray-400 italic">
-                                an example is provided bellow                                
-                            </small>
+                            <div className="flex flex-col ml-3 gap-3 w-full">
+                                <small className="text-xs text-gray-500 dark:text-gray-400 italic">
+                                    Example: "I'm a sales rep for TechCorp selling cloud storage solutions to small businesses..."
+                                </small>
+                                <small className="text-xs text-gray-500 dark:text-gray-400 italic">
+                                    an example is provided bellow                                
+                                </small>
+                                </div>
+                                
+                                <textarea
+                                name="ConfigurationDescription"
+                                placeholder="Describe yourself as a salesperson, the product you're selling, and your organization..."
+                                className="w-[98%] ml-auto min-h-[120px] p-3 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white/90 dark:bg-gray-700/90 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500 transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 resize-y"
+                                {...register('ConfigurationDescription', {
+                                    required: {
+                                    value: true,
+                                    message: 'This description is required to ensure accurate AI assistance.',
+                                    }
+                                })}
+                                />
+                                
+                                {/* Error message */}
+                                {errors.ConfigurationDescription && (
+                                <span className="text-xs text-red-600 dark:text-red-400 mt-1 flex items-center gap-1">
+                                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                    {errors.ConfigurationDescription.message}
+                                </span>
+                                )}
+
                             </div>
-                            
-                            <textarea
-                            name="ConfigurationDescription"
-                            placeholder="Describe yourself as a salesperson, the product you're selling, and your organization..."
-                            className="w-full min-h-[120px] p-3 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white/90 dark:bg-gray-700/90 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500 transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 resize-y"
-                            {...register('ConfigurationDescription', {
-                                required: {
-                                value: true,
-                                message: 'This description is required to ensure accurate AI assistance.',
-                                }
-                            })}
-                            />
-                            
-                            {/* Error message */}
-                            {errors.ConfigurationDescription && (
-                            <span className="text-xs text-red-600 dark:text-red-400 mt-1 flex items-center gap-1">
-                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                </svg>
-                                {errors.ConfigurationDescription.message}
-                            </span>
-                            )}
                         </div>
 
                         {/* Clear Chat Section */}
@@ -480,7 +550,7 @@ const AIPage = ({isAuthenticated}) => {
                             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                             Chat Management
                             </label>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center ml-3 gap-3">
                             <button
                                 data-tip="By clicking here, you will clear the chat record you have acquired with your prospect."
                                 disabled={getValues('ConfigurationDescription') == ''}
@@ -501,11 +571,138 @@ const AIPage = ({isAuthenticated}) => {
                             </span>
                             </div>
                         </div>
+
+                       
+                        {/* Text to Speech Settings */}
+                        <div className="w-full p-4 bg-white/80 dark:bg-gray-800/80 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                            <h3 className="flex items-center gap-2 text-lg font-medium text-gray-800 dark:text-gray-200 mb-4">
+                                <svg className="w-5 h-5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                                </svg>
+                                Text-to-Speech Settings
+                            </h3>
+
+                            <div className="space-y-5">
+                                {/* Volume Control */}
+                                <div className="w-full">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <label htmlFor="volume" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Volume
+                                        </label>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">Range: 0 - 1</span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <input
+                                        type="range"
+                                        id="volume"
+                                        name="volume"
+                                        min="0"
+                                        max="1"
+                                        step="0.1"
+                                        value={TTSConfigurations.volume}
+                                        onChange={ToongleSpeechSettings}
+                                        className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none ring-[1px] ring-slate-300 dark:ring-slate-700 cursor-pointer accent-sky-500"
+                                        />
+                                        <input
+                                        type="number"
+                                        id="volume-input"
+                                        name="volume"
+                                        min="0"
+                                        value={TTSConfigurations.volume}
+                                        max="1"
+                                        step="0.1"
+                                        placeholder="0.5"
+                                        onChange={ToongleSpeechSettings}
+                                        className="w-20 px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Pitch Control */}
+                                <div className="w-full">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <label htmlFor="pitch" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Pitch
+                                        </label>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">Range: 0 - 2</span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <input
+                                        type="range"
+                                        id="pitch"
+                                        name="pitch"
+                                        min="0"
+                                        max="2"
+                                        step="0.1"
+                                        value={TTSConfigurations.pitch}
+                                        onChange={ToongleSpeechSettings}
+                                        className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none ring-[1px] ring-slate-300 dark:ring-slate-700  cursor-pointer accent-sky-500"
+                                        />
+                                        <input
+                                        type="number"
+                                        id="pitch-input"
+                                        name="pitch"
+                                        min="0"
+                                        value={TTSConfigurations.pitch}
+                                        max="2"
+                                        step="0.1"
+                                        placeholder="1.0"
+                                        onChange={ToongleSpeechSettings}
+                                        className="w-20 px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Rate Control */}
+                                <div className="w-full">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <label htmlFor="rate" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Speech Rate
+                                        </label>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">Range: 0 - 10</span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <input
+                                        type="range"
+                                        id="rate"
+                                        name="rate"
+                                        min="0"
+                                        max="10"
+                                        value={TTSConfigurations.rate}
+                                        step="0.5"
+                                        onChange={ToongleSpeechSettings}
+                                        className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none ring-[1px] ring-slate-300 dark:ring-slate-700  cursor-pointer accent-sky-500"
+                                        />
+                                        <input
+                                        type="number"
+                                        id="rate-input"
+                                        name="rate"
+                                        min="0"
+                                        max="10"
+                                        step="0.5"
+                                        value={TTSConfigurations.rate}
+                                        placeholder="1.0"
+                                        onChange={ToongleSpeechSettings}
+                                        className="w-20 px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-4 p-3 bg-sky-50 dark:bg-sky-900/20 rounded-md border border-sky-100 dark:border-sky-800">
+                                <p className="text-xs text-sky-700 dark:text-sky-300 flex items-start gap-1">
+                                <svg className="w-3 h-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clipRule="evenodd" />
+                                </svg>
+                                <span>Tip: Adjust these settings to find the most natural sounding voice for your needs.</span>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
                 {/* main cointainer */}
-                <div className={`  gap-3 w-full max-w-[1000px] mx-auto text-black dark:text-slate-100 mb-auto px-1  `} >
+                <div className={`  gap-3 w-full relative max-w-[1000px] mx-auto text-black dark:text-slate-100 mb-auto px-1  `} >
                     {/* conversation container */}
                     <div className={` bg-white/50 min-h-[500px] h-fit dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-2 shadow-lg border border-gray-200 dark:border-gray-700 `}  >
                         {/* guide information before a chat is started */}
@@ -566,10 +763,19 @@ const AIPage = ({isAuthenticated}) => {
                         </div>
 
                         {/* chat message */}                        
-                        <div ref={ChatLogRef} className={` z-20 bg-transparent flex flex-col overflow-y-auto overflow-x-hidden w-full gap-1 h-full max-h-[640px] sm:max-h-[650px] `} >
+                        <div ref={ChatLogRef} className={` z-20 bg-transparent flex flex-col overflow-y-auto overflow-x-hidden w-full gap-1 h-full max-h-[640px] sm:max-h-[650px] lg:max-h-[700px] transition-all duration-300 `} >
                             {MapChatMesseger}
                             <span  data-tip="Loading"  className= {` ${IsLoading ? 'loading loading-dots' : ' invisible'} transition-all duration-200 sticky top-0 tooltip cursor-pointer mx-auto my-2 bg-slate-600  loading-md `}></span>
+                        
+                            {/* pause button while playing audio */}
+                            <div onClick={cancel}  data-tip='pause audio'  className={` ${speaking ? 'flex flex-row' :  'hidden' } tooltip cursor-pointer tooltip-top gap-3 sticky bottom-1 left-1 ring-[1px] dark:ring-amber-600 ring-red-400 bg-slate-800 dark:bg-slate-700 w-[100px] h-[200px] p-3 rounded-md `} >
+                                <small className=" opacity-80 text-white dark:text-white italic" >pause</small>
+                                <button  >
+                                    <CiPause1    className=" text-white opacity-100 dark:text-white transition-all duration-200 cursor-pointer " />
+                                </button>   
+                            </div>
                         </div>
+                        
                     </div> 
                     {/* button controller container  */}
                     <div className="flex flex-row gap-2 flex-wrap justify-around px-2 my-2 w-full " >

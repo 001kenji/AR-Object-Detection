@@ -44,6 +44,18 @@ const Home = ({}) => {
        
         
     },[SelectedPage])
+    useLayoutEffect(() => {
+        var storeTheme = localStorage.getItem('theme')
+
+        if(storeTheme == 'dark' || storeTheme == 'light'){
+            dispatch({
+                type : ToogleTheme,
+                payload : storeTheme
+            })
+            SetTheme(storeTheme)
+           
+        }
+    },[])
    
      useLayoutEffect(() => {
         // console.log('route changed')
@@ -61,6 +73,7 @@ const Home = ({}) => {
                 type : ToogleTheme,
                 payload : props
             })
+            localStorage.setItem('theme',props)
            
         }
     }
@@ -73,6 +86,7 @@ const Home = ({}) => {
                 payload : val
             })
             SetTheme(val)
+            localStorage.setItem('theme',val)
         }
     }
 
