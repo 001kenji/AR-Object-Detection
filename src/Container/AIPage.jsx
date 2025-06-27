@@ -250,7 +250,7 @@ const AIPage = ({isAuthenticated}) => {
     
     useEffect(() => {
         if(RecordedHooktext != '' && RecordedHooktext){
-            alert(RecordedHooktext)
+            // alert(RecordedHooktext)
             const dataval = {
                 img : ClientIcon,
                 email : 'client',
