@@ -14,76 +14,13 @@ import { useSpeechSynthesis } from 'react-speech-kit';
 import useGeminiTextGen from "../Components/aiRequest.jsx";
 // lottieflow animated icons 
 import Notifier from "../Components/notifier.jsx";
+
 // using argon2 pashing for both javascript and py
 //const argon2 = require('argon2');
 const AIPage = ({isAuthenticated}) => {
-    const {register,formState,getValues} = useForm({
+    const {register,formState,getValues,setValue,watch} = useForm({
         defaultValues : {
-            'ConfigurationDescription' : `Salesperson Information
-                Name: John Doe
-                Position: Senior Sales Representative
-                Contact Information:
-
-                Phone: (123) 456-7890
-
-                Email: john.doe@example.com
-
-                LinkedIn: linkedin.com/in/johndoe-sales
-
-                Region/Area Covered: Northeast USA
-                Specializations: B2B Sales, Enterprise Solutions
-
-                Products/Services Sold
-                Product Name: Cloud-Based CRM Software
-
-                Key Features:
-
-                AI-driven customer insights
-
-                Automated sales pipelines
-
-                Real-time analytics
-
-                Target Clients: Mid-sized to large enterprises
-
-                Product Name: Cybersecurity Suite
-
-                Key Features:
-
-                End-to-end encryption
-
-                24/7 threat monitoring
-
-                Compliance management (GDPR, HIPAA)
-
-                Target Clients: Financial institutions, healthcare providers
-
-                Service Name: IT Consulting & Implementation
-
-                Scope: Custom software integration, staff training, post-sale support
-
-                Company Details
-                Company Name: TechSolutions Inc.
-                Industry: Information Technology & Software
-                Headquarters: San Francisco, CA
-                Year Founded: 2010
-                Key Clients: Fortune 500 companies, government agencies
-                Company USP:
-
-                "Delivering scalable, secure, and innovative tech solutions since 2010."
-
-                Awards: Best SaaS Provider 2023 (TechAwards)
-
-                Website: www.techsolutions.com
-
-                Additional Notes
-                Salesperson’s Achievements:
-
-                Exceeded annual quota by 150% in 2023.
-
-                Winner of "Top Performer" award for Q1 2024.
-
-                                            Sales Approach: Consultative selling, long-term relationship building.`         
+            'ConfigurationDescription' : ``         
         },
         mode : 'all'
     })
@@ -92,6 +29,8 @@ const AIPage = ({isAuthenticated}) => {
         setRecordedHooktext,
         isListening,
         startRecording,
+        ErrorMessagesHook,
+        SetErrorMessagesHook,
         stopRecording,
     } = UseSpeechRecognition();
     const { response, loading, error, generateText } = useGeminiTextGen()
@@ -209,8 +148,71 @@ const AIPage = ({isAuthenticated}) => {
     const [RolePlaying,SetRolePlaying] = useState([
         AIConfigurationText
       ]) 
+    const DemoConstructionDescription = `Salesperson Information
+                Name: John Doe
+                Position: Senior Sales Representative
+                Contact Information:
 
+                Phone: (123) 456-7890
 
+                Email: john.doe@example.com
+
+                LinkedIn: linkedin.com/in/johndoe-sales
+
+                Region/Area Covered: Northeast USA
+                Specializations: B2B Sales, Enterprise Solutions
+
+                Products/Services Sold
+                Product Name: Cloud-Based CRM Software
+
+                Key Features:
+
+                AI-driven customer insights
+
+                Automated sales pipelines
+
+                Real-time analytics
+
+                Target Clients: Mid-sized to large enterprises
+
+                Product Name: Cybersecurity Suite
+
+                Key Features:
+
+                End-to-end encryption
+
+                24/7 threat monitoring
+
+                Compliance management (GDPR, HIPAA)
+
+                Target Clients: Financial institutions, healthcare providers
+
+                Service Name: IT Consulting & Implementation
+
+                Scope: Custom software integration, staff training, post-sale support
+
+                Company Details
+                Company Name: TechSolutions Inc.
+                Industry: Information Technology & Software
+                Headquarters: San Francisco, CA
+                Year Founded: 2010
+                Key Clients: Fortune 500 companies, government agencies
+                Company USP:
+
+                "Delivering scalable, secure, and innovative tech solutions since 2010."
+
+                Awards: Best SaaS Provider 2023 (TechAwards)
+
+                Website: www.techsolutions.com
+
+                Additional Notes
+                Salesperson’s Achievements:
+
+                Exceeded annual quota by 150% in 2023.
+
+                Winner of "Top Performer" award for Q1 2024.
+
+                Sales Approach: Consultative selling, long-term relationship building.`
     useEffect(() => {
         if(localStorage.getItem('Chatlist') != null && localStorage.getItem('Chatlist') != 'null' && localStorage.getItem('Chatlist') != 'undefined'){
             
@@ -233,6 +235,11 @@ const AIPage = ({isAuthenticated}) => {
         }else{
             localStorage.setItem('TTSConfigurations',JSON.stringify(TTSConfigurations))
         }
+
+        if(localStorage.getItem('SalesDescription') != ''){
+            var description = localStorage.getItem('SalesDescription')
+            setValue('ConfigurationDescription',description)
+        }
             
             
     },[])
@@ -243,7 +250,7 @@ const AIPage = ({isAuthenticated}) => {
     
     useEffect(() => {
         if(RecordedHooktext != '' && RecordedHooktext){
-            
+            alert(RecordedHooktext)
             const dataval = {
                 img : ClientIcon,
                 email : 'client',
@@ -265,11 +272,31 @@ const AIPage = ({isAuthenticated}) => {
             SetRolePlaying(rolelist)
             localStorage.setItem('RolePlaying',JSON.stringify(rolelist))
             SetIsLoading(true)
-            handleSubmitAiRequest(rolelist)
+            // handleSubmitAiRequest(rolelist)
 
             setRecordedHooktext('')
         }
     },[RecordedHooktext])
+
+    useEffect(() => {
+        if(getValues('ConfigurationDescription') != null){
+            localStorage.setItem('SalesDescription',String(getValues('ConfigurationDescription')))
+        }
+    },[watch('ConfigurationDescription')])
+
+    useEffect(() => {
+        if(ErrorMessagesHook != ''){
+            ShowToast('warning',ErrorMessagesHook)
+            SetErrorMessagesHook('')
+        }
+        if(isListening == false){
+            SetMikeContainer((e) => {
+                return {
+                    isRecording : false
+                }
+            })
+        }
+    },[isListening,ErrorMessagesHook])
 
  
     function ShowToast(type, message, progress = null) {
@@ -333,7 +360,7 @@ const AIPage = ({isAuthenticated}) => {
                     </blockquote> 
                    
                 </div> 
-                <div className={` w-fit mr-auto mt-auto sticky bottom-0 flex transition-all duration-200 text-lg flex-row gap-2 ml-4 invisible group-hover:visible flex-wrap max-w-xs`} >
+                <div className={` w-fit mr-auto mt-auto sticky bottom-0 flex transition-all duration-200 text-lg flex-row gap-2 ml-4 sm:invisible mb-1 sm:group-hover:visible flex-wrap max-w-xs`} >
                         <button onClick={() =>TextToSpeech(items.text) } data-tip='Play audio' className={` tooltip tooltip-top`} >
                             <CiPlay1   className=" dark:text-slate-400 text-slate-600 hover:text-slate-800 dark:hover:text-slate-200 transition-all duration-200 cursor-pointer " />
                         </button>                       
@@ -384,6 +411,7 @@ const AIPage = ({isAuthenticated}) => {
       }
       
     function ToongleListeningFunc() {
+        // alert(MikeContainer.isRecording)
         if(MikeContainer.isRecording){
             SetMikeContainer((e) => {
                 return {
@@ -516,13 +544,16 @@ const AIPage = ({isAuthenticated}) => {
                                     Example: "I'm a sales rep for TechCorp selling cloud storage solutions to small businesses..."
                                 </small>
                                 <small className="text-xs text-gray-500 dark:text-gray-400 italic">
-                                    an example is provided bellow                                
+                                    click <a onClick={()=> setValue('ConfigurationDescription',DemoConstructionDescription)} className=" link-primary cursor-pointer" >here</a> to use a demo description                              
                                 </small>
-                                </div>
+                                <small className={` ${watch('ConfigurationDescription') == '' ? ' invisible ' : 'visible'} transition-all duration-300 text-xs w-fit ml-auto mr-3 text-gray-500 dark:text-gray-400 italic `} >
+                                    <a onClick={()=> setValue('ConfigurationDescription','')} className=" link-secondary cursor-pointer" >Clear</a>                               
+                                </small>
+                            </div>
                                 
                                 <textarea
                                 name="ConfigurationDescription"
-                                placeholder="Describe yourself as a salesperson, the product you're selling, and your organization..."
+                                placeholder="Describe yourself here as a salesperson, the product you're selling, and your organization..."
                                 className="w-[98%] ml-auto min-h-[120px] p-3 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white/90 dark:bg-gray-700/90 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500 transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 resize-y"
                                 {...register('ConfigurationDescription', {
                                     required: {
@@ -533,7 +564,7 @@ const AIPage = ({isAuthenticated}) => {
                                 />
                                 
                                 {/* Error message */}
-                                {errors.ConfigurationDescription && (
+                                {(errors.ConfigurationDescription && watch('ConfigurationDescription') == '' ) && (
                                 <span className="text-xs text-red-600 dark:text-red-400 mt-1 flex items-center gap-1">
                                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -733,7 +764,7 @@ const AIPage = ({isAuthenticated}) => {
                                     1
                                     </span>
                                     <p className="text-gray-700 dark:text-slate-300">
-                                    Provide details about yourself as a salesperson, the product you're selling, and your company.Click <span className="font-medium text-sky-600 dark:text-sky-400">'Configurations'</span> above to fill in the detials.
+                                    Provide details about yourself as a salesperson, the product you're selling, and the company behind the product.Click <span className="font-medium text-sky-600 dark:text-sky-400">'Configurations'</span> above to fill in the detials.
                                     </p>
                                 </li>
                                 <li className="flex items-start">
@@ -741,7 +772,7 @@ const AIPage = ({isAuthenticated}) => {
                                     2
                                     </span>
                                     <p className="text-gray-700 dark:text-slate-300">
-                                    Click <span className="font-medium text-sky-600 dark:text-sky-400">'Provide call instruction'</span> for opening sales call techniques or <span className="font-medium text-sky-600 dark:text-sky-400">'Provide end call message'</span> for closing techniques.
+                                    Click <span className="font-medium text-sky-600 dark:text-sky-400">'Provide call instruction'</span> to access opening sales call techniques or <span className="font-medium text-sky-600 dark:text-sky-400">'Provide end call message'</span> for closing techniques.
                                     </p>
                                 </li>
                                 <li className="flex items-start">
@@ -749,7 +780,7 @@ const AIPage = ({isAuthenticated}) => {
                                     3
                                     </span>
                                     <p className="text-gray-700 dark:text-slate-300">
-                                    Click <span className="font-medium text-sky-600 dark:text-sky-400">'Listen to client'</span> to let AI analyze the conversation and provide real-time responses.
+                                    Click <span className="font-medium text-sky-600 dark:text-sky-400">'Listen to client'</span> to let AI analyze what your client is saying so it can provide real-time responses you can use to reply effectively.
                                     </p>
                                 </li>
                                 </ol>
