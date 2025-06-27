@@ -272,7 +272,7 @@ const AIPage = ({isAuthenticated}) => {
             SetRolePlaying(rolelist)
             localStorage.setItem('RolePlaying',JSON.stringify(rolelist))
             SetIsLoading(true)
-            // handleSubmitAiRequest(rolelist)
+            handleSubmitAiRequest(rolelist)
 
             setRecordedHooktext('')
         }
