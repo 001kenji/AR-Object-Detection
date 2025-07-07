@@ -74,59 +74,57 @@ Perfect for:
 1. Clone the repository:
    ```bash
    git clone https://github.com/001kenji/document-ai-translator.git
+   ```
    cd document-translator-ai
 
 2. Install dependencies:
-   ``` npm install
+   ```bash
+   npm install
+   ```
 
 3. Configure environment:
-  ``` cp .env.example .env
-Edit .env with your API keys
+    ```bash
+    cp .env.example .env
+    ```
+  Edit .env with your API keys
 
-4. Start development server:
-  ``` npm run dev
+4. Start the development server:
+    ```bash
+    npm run dev
+    ```
 
 ### 📂 Project Structure
-
-  ``` 
-    src/
-    ├── assets/            # Static assets
-    ├── components/        # Reusable components
-    │   ├── camera/        # Camera UI
-    │   ├── ocr/           # OCR processing
-    │   ├── translation/   # Translation UI
-    │   └── ui/            # Common UI elements
-    ├── contexts/          # State management
-    ├── hooks/             # Custom hooks
-    ├── pages/             # Application views
-    ├── services/          # API/services
-    ├── styles/            # Global styles
-    ├── utils/             # Helper functions
-    ├── App.jsx            # Root component
-    └── main.jsx           # Entry point
-
+```
+      src/
+      ├── assets/            # Static assets
+      ├── components/        # Reusable components
+      │   ├── camera/        # Camera UI
+      │   ├── ocr/           # OCR processing
+      │   ├── translation/   # Translation UI
+      │   └── ui/            # Common UI elements
+      ├── contexts/          # State management
+      ├── hooks/             # Custom hooks
+      ├── pages/             # Application views
+      ├── services/          # API/services
+      ├── styles/            # Global styles
+      ├── utils/             # Helper functions
+      ├── App.jsx            # Root component
+      └── main.jsx           # Entry point
+```
 ### 📝 Usage Guide
 
-1. Capture Document:
+1. **Capture Document**
+   - Click the camera icon to take a photo.
+   - Or upload an image or PDF file.
 
-    -Click the camera icon to take a photo
+2. **Review Extracted Text**
+   - Edit any OCR errors in the text box.
+   - Highlight sections for specific translation.
 
-    -Or upload an image/PDF file
+3. **Select Target Language**
+   - Choose from 50+ supported languages.
+   - Use the search feature for quick finding.
 
-2. Review Extracted Text:
-
-    -Edit any OCR errors in the text box
-
-    -Highlight sections for specific translation
-
-3. Select Target Language:
-
-    -Choose from 50+ supported languages
-
-    -Use the search feature for quick finding
-
-4. Get Translation:
-
-    -Click "Translate" button
-
-    -Copy or download the results
+4. **Get Translation**
+   - Click the "Translate" button.
+   - Copy or download the results.
