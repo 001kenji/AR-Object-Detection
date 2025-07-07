@@ -24,43 +24,7 @@ const convertGeminiToPollinationsFormat = (geminiMessages) => {
   }).filter(Boolean) // remove nulls
 }
 
-// pollination ai method
-const usePollinationsTextGen = () => {
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState(null)
-  
-    const generateText = async (prompt) => {
-      setLoading(true)
-      setError(null)
-  
-      try {
-        const res = await fetch('https://text.pollinations.ai/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
-            messages: prompt,
-          }),
-        })
-  
-        if (!res.ok) throw new Error(`API error: ${res.status}`)
-  
-        const data = await res.text()
-        const content = data || ''
-        console.log('http content is :',content)
-        return content // ← now returns content directly
-      } catch (err) {
-        setError(err.message)
-        throw err
-      } finally {
-        setLoading(false)
-      }
-    }
-  
-    return { loading, error, generateText }
-  }
+
   
 
 const useGeminiTextGen = () => {
@@ -142,4 +106,40 @@ const useGeminiTextGen = () => {
 export default useGeminiTextGen
 
 //   export default usePollinationsTextGen
+// pollination ai method
+const usePollinationsTextGen = () => {
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(null)
   
+    const generateText = async (prompt) => {
+      setLoading(true)
+      setError(null)
+  
+      try {
+        const res = await fetch('https://text.pollinations.ai/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'gpt-3.5-turbo',
+            messages: prompt,
+          }),
+        })
+  
+        if (!res.ok) throw new Error(`API error: ${res.status}`)
+  
+        const data = await res.text()
+        const content = data || ''
+        console.log('http content is :',content)
+        return content // ← now returns content directly
+      } catch (err) {
+        setError(err.message)
+        throw err
+      } finally {
+        setLoading(false)
+      }
+    }
+  
+    return { loading, error, generateText }
+  }  

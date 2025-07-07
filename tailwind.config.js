@@ -8,7 +8,11 @@ export default {
    'node_modules/flowbite-react/lib/esm/**/*.js'
   ],
   plugins: [
-  flowbite.plugin(),,
+  flowbite.plugin(),
+  require("daisyui"),
 	],
+  daisyui: {
+    themes: ["lemonade", "synthwave"],
+  },
   
 }

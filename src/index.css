@@ -1,5 +1,8 @@
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: light --default, dark --prefersdark, lemonade , synthwave;
+}
 @import "tailwindcss";
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* TAILWIND CUSTOM VARIABLES */
@@ -19,34 +22,6 @@
 .dot-indicator {
   transition: all 0.3s ease;
 }
-
-
-
-/* audio file beautifier */
-.audio-player {
-  height: 40px;
-}
-
-.audio-player::-webkit-media-controls-panel {
-  background-color: slategray;
-  border-radius: 8px;
-  color: black;
-}
-
-.audio-player::-webkit-media-controls-play-button,
-.audio-player::-webkit-media-controls-mute-button {
-  border-radius: 50%;
-  background-color: #3b82f6;
-  color: white;
-}
-
-.audio-player::-webkit-media-controls-current-time-display,
-.audio-player::-webkit-media-controls-time-remaining-display {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.8rem;
-  color: black;
-}
-
 
 
 

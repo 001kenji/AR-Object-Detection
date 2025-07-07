@@ -11,7 +11,7 @@ function App() {
     
     <Routes>
       {/* <Route path="/chat" element={<ErrorBoundary> <Chat/> </ErrorBoundary> } /> */}
-      <Route path="/" index element={<Navigate to="/home/AI" />} />
+      <Route path="/" index element={<Navigate to="/home/dashboard" />} />
       <Route path="/home/:page/:extrainfo?/:extrainfo2?" element={ <ErrorBoundary> <Home /> </ErrorBoundary> } />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

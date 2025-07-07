@@ -16,7 +16,8 @@ export default class ErrorBoundary extends React.Component {
   
     componentDidCatch(error, info) {
       // You can log errors to an error reporting service here
-      // console.error("Error caught by Error Boundary: ", error, info);
+      console.error("Error caught by Error Boundary: ", error, info);
+     
     }
 
     handleReset = () => {
@@ -42,6 +43,7 @@ export default class ErrorBoundary extends React.Component {
                       <FaExclamationTriangle className="text-2xl" />
                     </div>
                     <h1 className="text-3xl font-bold text-slate-800">
+                      
                       <span className="text-indigo-600">Oops!</span> Something broke
                     </h1>
                   </div>

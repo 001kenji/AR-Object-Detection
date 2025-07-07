@@ -16,9 +16,12 @@ export default defineConfig({
     tailwindcss(),
     react(),    
     ],
-    // server: {
-    //       host: '0.0.0.0', 
-         
-    //     }
+    server: {
+      headers: {
+        "Content-Security-Policy": "worker-src 'self' blob:"
+      },
+      host: '0.0.0.0', 
+        
+      }
     
 })
