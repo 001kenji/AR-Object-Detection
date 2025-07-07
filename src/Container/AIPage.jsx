@@ -349,7 +349,7 @@ const AIPage = ({isAuthenticated}) => {
                                 videoConstraints={{
                                     width: 500,
                                     height: 500,
-                                    facingMode: "user",
+                                    facingMode: "environment",
                                 }}
                                 className=" rounded-md"
                             >
