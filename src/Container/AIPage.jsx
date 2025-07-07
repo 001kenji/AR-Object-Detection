@@ -9,6 +9,7 @@ import { FiUpload, FiSearch, FiCamera,FiCameraOff,FiChevronDown,FiCheck  , FiLoa
 import { TbLanguage } from 'react-icons/tb';
 import Webcam from 'react-webcam';
 import Tesseract from 'tesseract.js';
+import CameraShuttleSound from '../assets/audio/camera.mp3'
 // lottieflow animated icons 
 import Notifier from "../Components/notifier.jsx";
 const AIPage = ({isAuthenticated}) => {
@@ -28,6 +29,7 @@ const AIPage = ({isAuthenticated}) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const CameraTakenRef = useRef(null)
     const languages = [
         'English',
         'French',
@@ -166,7 +168,10 @@ const AIPage = ({isAuthenticated}) => {
 
     const captureImage = () => {
       const imageSrc = webcamRef.current.getScreenshot();
+    
+      
       setImage(imageSrc);
+      CameraTakenRef.current.play()
     };
     const filteredLanguages = languages.filter(lang =>
       lang.toLowerCase().includes(searchTerm.toLowerCase())
@@ -312,7 +317,7 @@ const AIPage = ({isAuthenticated}) => {
     return (
         <div className={` h-full  bg-transparent  py-4  overflow-x-hidden w-full overflow-y-auto relative min-w-full max-w-[100%] flex flex-col justify-between  `} >
             <Notifier />
-
+            <audio src={CameraShuttleSound}  ref={CameraTakenRef} className=" hidden"></audio>
             <section className="md:w-full flex flex-col gap-6 px-4 py-8 w-full rounded-sm md:mx-auto bg-base-100 dark:bg-base-200 m-auto h-full">
                 <h1 className="text-2xl font-bold text-center">AI Document Translator</h1>
                 
