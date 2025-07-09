@@ -54,7 +54,7 @@ const ContactMe = () =>{
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Contact Information */}
-                <div className="bg-slate-400 dark:bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50">
+                <div className="bg-transparent shadow-xs dark:shadow-none shadow-slate-400 dark:bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 dark:border dark:border-slate-700/50">
                 <h3 className="text-2xl font-semibold text-black dark:text-white mb-6 flex items-center">
                     <svg className="w-6 h-6 mr-2 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -121,7 +121,7 @@ const ContactMe = () =>{
                 </div>
 
                 {/* Contact Form */}
-                <div className="dark:bg-slate-800/50 bg-slate-400 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50">
+                <div className="bg-transparent shadow-xs dark:shadow-none shadow-slate-400 dark:bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 dark:border dark:border-slate-700/50">
                     <h3 className="text-2xl font-semibold text-black dark:text-white mb-6 flex items-center">
                         <svg className="w-6 h-6 mr-2 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -172,7 +172,7 @@ const ContactMe = () =>{
                             id="message" 
                             name="message"
                             rows="4" 
-                            className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500  text-black dark:text-white placeholder:text-slate-800 dark:placeholder-slate-400" 
+                            className="w-full px-4 py-2 bg-gray-50/50 dark:bg-slate-800 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500  text-black dark:text-white placeholder:text-slate-800 dark:placeholder-slate-400" 
                             placeholder="Your message here..."
                             required
                         ></textarea>
@@ -181,7 +181,7 @@ const ContactMe = () =>{
                         <button 
                         type="submit" 
                         disabled={isSending}
-                        className="w-full py-3 px-6 bg-gradient-to-r from-sky-600 to-purple-600 text-white font-medium rounded-lg hover:from-sky-700 hover:to-purple-700 transition-all duration-300 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
+                        className="w-full py-3 px-6 bg-gradient-to-r from-rose-600 to-amber-600 text-white font-medium rounded-lg hover:from-sky-700 hover:to-purple-700 transition-all duration-300 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
                         >
                         {isSending ? (
                             <>

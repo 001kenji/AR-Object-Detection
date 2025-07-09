@@ -25,25 +25,17 @@ const Home = ({}) => {
     const SelectedPage = useSelector((state) => state.auth.Page)
     const ComponentsColors = useSelector((state) => state.themes.components)
     useLayoutEffect(() => {
-        dispatch({
-            type : PageToogleReducer,
-            payload : page
-        })
-        if(SelectedPage != null){
-             if(SelectedPage[0] == 'AI'){
-                TooglePages('AI')
-            }else if(SelectedPage[0] == 'ContactMe'){
-                TooglePages('ContactMe')
-            }
-            
-         }
-        else {
+        console.log(SelectedPage)
+        if(page != null){
+            // TooglePages(page)
             SetPage(page)
+            navigate(`/home/${page}`)
         }
         var storage_theme = localStorage.getItem("data-theme")
         FuncToogleTheme(storage_theme)
         
-    },[SelectedPage])
+    },[])
+
     useLayoutEffect(() => {
         var storeTheme = localStorage.getItem('theme')
 
@@ -57,14 +49,7 @@ const Home = ({}) => {
         }
     },[])
    
-     useLayoutEffect(() => {
-        // console.log('route changed')
-        if(extrainfo != null && extrainfo != 'undefined'){
-                SetPage(page)
-                navigate(`/home/${page}`)
-                // console.log(page,extrainfo)
-        }
-     },[page,extrainfo])
+ 
 
     function FuncToogleTheme (props) {
         if(props){
@@ -143,7 +128,7 @@ const Home = ({}) => {
                 </div>
                 <div className="drawer-side z-50 lg:drawer-open lg:fixed ">
                     <label  htmlFor="my-drawer-3" aria-label="close sidebar" className="drawer-overlay transition-all duration-500"></label>
-                    <ul className={` menu bg-white dark:bg-blue-950 sm:bg-transparent dark:sm:bg-transparent  border-r-[1px] lg:max-w-[250px]  border-r-slate-500 dark:border-r-slate-600 min-h-full  font-[PoppinsN]  transition-all duration-500 w-80 p-4 `}>
+                    <ul className={` menu bg-white dark:bg-blue-950 lg:bg-transparent lg:dark:bg-transparent  border-r-[1px] lg:max-w-[250px]  border-r-slate-500 dark:border-r-slate-600 min-h-full  font-[PoppinsN]  transition-all duration-500 w-80 p-4 `}>
                         <label ref={SideNavControler} htmlFor="my-drawer-3" aria-label="open sidebar" className="btn lg:invisible btn-square btn-ghost bg-transparent border-none hover:shadow-xs hover:shadow-slate-500 dark:hover:shadow-slate-50">
                             <IoMdAdd  
                                 className="inline-block rotate-45 transition-all duration-300 ml-auto h-5 w-full hover:text-rose-600 text-slate-900 dark:text-slate-300 stroke-current"

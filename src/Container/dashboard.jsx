@@ -1,7 +1,7 @@
 import React, {  useEffect, useLayoutEffect, useRef, useState } from "react";
 import '../App.css'
 import { connect } from "react-redux";
-import { FiCamera, FiStar , FiGlobe,FiSearch, FiCheckCircle, FiX } from "react-icons/fi";
+import { FiCamera, FiStar , FiGlobe,FiSearch,FiAlertCircle, FiCheckCircle, FiX } from "react-icons/fi";
 // lottieflow animated icons 
 import Notifier from "../Components/notifier.jsx";
 

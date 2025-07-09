@@ -30,6 +30,7 @@ const AIPage = ({isAuthenticated}) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
     const CameraTakenRef = useRef(null)
+    const [ActivateCamera,SetActivateCamera] = useState(false)
     const languages = [
         'English',
         'French',
@@ -125,6 +126,21 @@ const AIPage = ({isAuthenticated}) => {
 
     }
 
+    useEffect(() => {
+      const Captured_Preview = localStorage.getItem('Captured-Preview')
+      const ExtractedText =  localStorage.getItem('ExtractedText')
+      const TranslatedText = localStorage.getItem('TranslatedText')
+        if(Captured_Preview && Captured_Preview != null && Captured_Preview != 'null'){
+          setImage(Captured_Preview)
+        }
+        if(ExtractedText && ExtractedText != null && ExtractedText != 'null'){
+          setExtractedText(ExtractedText);
+        }
+        if(TranslatedText && TranslatedText != null && TranslatedText != 'null'){
+          setTranslatedText(TranslatedText);
+        }
+    },[])
+
 
     function ShowToast(type, message, progress = null) {
             if (type != null && message != null) {
@@ -161,6 +177,7 @@ const AIPage = ({isAuthenticated}) => {
         const reader = new FileReader();
         reader.onload = (event) => {
             setImage(event.target.result);
+            localStorage.setItem('Captured-Preview',event.target.result)
         };
         reader.readAsDataURL(file);
         }
@@ -199,8 +216,10 @@ const AIPage = ({isAuthenticated}) => {
           { logger: m => console.log(m) }
         );
         setExtractedText(text);
+        localStorage.setItem('ExtractedText',text)
       } catch (err) {
         console.error('OCR Error:', err);
+        localStorage.setItem('ExtractedText',null)
       } finally {
         setIsProcessing(false);
       }
@@ -220,7 +239,9 @@ const AIPage = ({isAuthenticated}) => {
         
         const translation = await generateText(prompt);
         setTranslatedText(translation);
+        localStorage.setItem('TranslatedText',translation)
       } catch (err) {
+        localStorage.setItem('TranslatedText',null)
         console.error('Translation Error:', err);
       }
     };
@@ -257,6 +278,7 @@ const AIPage = ({isAuthenticated}) => {
       } catch (error) {
         console.error('Permission check failed:', error);
         setHasPermission(false);
+        SetActivateCamera(false)
       }
     };
 
@@ -287,30 +309,9 @@ const AIPage = ({isAuthenticated}) => {
       );
     }
 
-    if (!hasPermission) {
-      return (
-        <div className="max-w-md mx-auto p-6 bg-base-200 h-fit my-auto rounded-lg text-center">
-          <FiCameraOff className="mx-auto text-4xl mb-4 text-error" />
-          <h3 className="text-xl font-bold mb-2">Camera Access Required</h3>
-          <p className="mb-4">We need your permission to access the camera for document scanning.</p>
-          <button
-            onClick={requestCameraAccess}
-            disabled={isRequesting}
-            className="btn btn-primary"
-          >
-            {isRequesting ? (
-              <span className="flex items-center gap-2">
-                <FiLoader className="animate-spin" /> Requesting...
-              </span>
-            ) : (
-              <span className="flex items-center gap-2">
-                <FiCamera /> Allow Camera Access
-              </span>
-            )}
-          </button>
-        
-        </div>
-      );
+    function RemoveDocumentPreview(){
+      setImage(null)
+      localStorage.setItem('Captured-Preview',null)
     }
 
   
@@ -343,34 +344,86 @@ const AIPage = ({isAuthenticated}) => {
                         />
                         
                         <div className="divider">OR</div>
-                        
-                        <div className="flex flex-col gap-2">
-                            <Webcam
-                                audio={false}
-                                ref={webcamRef}
-                                height={500}
-                                screenshotFormat="image/jpeg"
-                                width={500}
-                                videoConstraints={{
-                                    width: 500,
-                                    height: 500,
-                                    facingMode: "environment",
-                                }}
-                                className=" rounded-md"
-                            >
+                        {
+                          hasPermission ? 
+                          ActivateCamera ?
+                            <div className="flex flex-col gap-2">
+                                <Webcam
+                                    audio={false}
+                                    ref={webcamRef}
+                                    height={500}
+                                    screenshotFormat="image/jpeg"
+                                    width={500}
+                                    videoConstraints={{
+                                        width: 500,
+                                        height: 500,
+                                        facingMode: "environment",
+                                    }}
+                                    className=" rounded-md"
+                                >
+                                    
+                                </Webcam>
+                                <div className="flex flex-row flex-wrap gap-2  justify-between" >
+                                    <button 
+                                        onClick={captureImage}
+                                        className="btn btn-secondary w-full sm:w-[70%]"
+                                    >
+                                        <FiCamera className="mr-2" /> Capture Image
+                                    </button>
+                                    <button
+                                      onClick={() => SetActivateCamera(false)}
+                                      className="btn btn-primary"
+                                    >
+                                      <span className="flex items-center gap-2">
+                                          Close snapshot
+                                        </span>
+                                    </button>
+                                </div>
                                 
-                            </Webcam>
-                            <button 
-                                onClick={captureImage}
-                                className="btn btn-secondary w-full"
+                            </div> 
+                              :
+                              <div className="max-w-md mx-auto p-6 bg-base-100/50 dark:bg-base-200 h-fit my-auto rounded-lg text-center">
+                                <FiCamera className="mx-auto text-4xl mb-4 text-error" />
+                                <p className="mb-4"></p>
+                                <button
+                                  onClick={() => SetActivateCamera(true)}
+                                  className="btn btn-primary"
+                                >
+                                   <span className="flex items-center gap-2">
+                                      Take snapshot
+                                    </span>
+                                </button>
+                              
+                              </div>
+                          :
+                          <div className="max-w-md mx-auto  p-2 sm:p-6 bg-base-100/50 dark:bg-base-200 h-fit my-auto rounded-lg text-center">
+                            <FiCameraOff className="mx-auto text-4xl mb-4 text-error" />
+                            <h3 className="text-xl font-bold mb-2">Camera Access Required</h3>
+                            <p className="mb-4">We need your permission to access the camera for document scanning.</p>
+                            <button
+                              onClick={requestCameraAccess}
+                              disabled={isRequesting}
+                              className="btn btn-primary"
                             >
-                                <FiCamera className="mr-2" /> Capture Image
+                              {isRequesting ? (
+                                <span className="flex items-center gap-2">
+                                  <FiLoader className="animate-spin" /> Requesting...
+                                </span>
+                              ) : (
+                                <span className="flex items-center gap-2">
+                                  <FiCamera /> Allow Camera Access
+                                </span>
+                              )}
                             </button>
-                        </div>
+                          
+                          </div>
+                        }
+                        
+
                     </div>
                     </div>
                     
-                    <div className="bg-base-200 dark:bg-base-300 p-6 rounded-lg shadow-sm">
+                    <div className="bg-base-200 dark:bg-base-300  p-2 sm:p-6 rounded-lg shadow-sm">
                     <h2 className="text-xl font-semibold mb-4">Document Preview</h2>
                     {image ? (
                         <div className="relative">
@@ -380,7 +433,7 @@ const AIPage = ({isAuthenticated}) => {
                             className="w-full h-64 object-contain rounded-lg border border-base-content/20"
                         />
                         <button 
-                            onClick={() => setImage(null)}
+                            onClick={RemoveDocumentPreview}
                             className="btn btn-circle btn-sm absolute top-2 right-2"
                         >
                             <FiX />
@@ -394,7 +447,7 @@ const AIPage = ({isAuthenticated}) => {
                     </div>
                 </div>
                 
-                <div className="bg-base-200 dark:bg-base-300 p-6 rounded-lg shadow-sm">
+                <div className="bg-base-200 dark:bg-base-300 p-2 sm:p-6 rounded-lg shadow-sm">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                     <h2 className="text-xl font-semibold flex items-center gap-2">
                         <FiCheckCircle /> Extracted Text
@@ -420,7 +473,7 @@ const AIPage = ({isAuthenticated}) => {
                     />
                 </div>
                 
-                <div className="bg-base-200 dark:bg-base-300 p-6 rounded-lg shadow-sm">
+                <div className="bg-base-200 dark:bg-base-300  p-2 sm:p-6 rounded-lg shadow-sm">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                     <div className="flex flex-row flex-wrap items-center gap-4">
                         <h2 className="text-xl font-semibold flex items-center gap-2">
