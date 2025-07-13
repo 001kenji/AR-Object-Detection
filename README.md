@@ -1,6 +1,7 @@
 # AR Object Detection with Accessibility Features
 
 ![AR Object Detection Demo](public/apple-touch-icon.png)
+<br/>
 A real-time object detection system with augmented reality visualization and accessibility features for visually impaired users.
 
 ## Features
