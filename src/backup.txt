@@ -1,0 +1,53 @@
+function CombinePredictions(data) {
+    if (!Array.isArray(data) || data.length === 0) {
+      return {
+        class: "",
+        bbox: [],
+        score: 0
+      };
+    }
+  
+    // Combine all class names
+    const combinedClass = data.map(item => item.class).join(", ");
+  
+    // Find maximum bbox length in the data
+    const bboxLength = Math.max(...data.map(item => item.bbox.length));
+  
+    // Initialize sums, mins, and maxs for each bbox index
+    const bboxSums = Array(bboxLength).fill(0);
+    const bboxMins = Array(bboxLength).fill(Infinity);
+    const bboxMaxs = Array(bboxLength).fill(-Infinity);
+  
+    // Sum up bbox elements and find min/max per index
+    data.forEach(item => {
+      item.bbox.forEach((value, index) => {
+        bboxSums[index] += value;
+        bboxMins[index] = Math.min(bboxMins[index], value);
+        bboxMaxs[index] = Math.max(bboxMaxs[index], value);
+      });
+    });
+  
+    // Compute element-wise average bbox and normalize to [0, 1]
+    const averageBbox = bboxSums.map((sum, index) => {
+      const avg = sum / data.length;
+      const min = bboxMins[index];
+      const max = bboxMaxs[index];
+      return (max - min === 0) ? 0 : (avg - min) / (max - min);
+    });
+  
+    // Calculate average score and normalize to [0, 1]
+    const scores = data.map(item => item.score);
+    const totalScore = scores.reduce((sum, score) => sum + score, 0);
+    const avgScoreRaw = totalScore / data.length;
+    const minScore = Math.min(...scores);
+    const maxScore = Math.max(...scores);
+    const averageScore = (maxScore - minScore === 0)
+      ? 0
+      : (avgScoreRaw - minScore) / (maxScore - minScore);
+  
+    return {
+      class: combinedClass,
+      bbox: averageBbox,
+      score: averageScore
+    };
+  }
