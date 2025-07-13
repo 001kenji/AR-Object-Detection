@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -201,6 +202,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 =======
+=======
+>>>>>>> 480813af935123b2c7646eaec0b0181d84b0f4fb
 MIT License
 
 Copyright (c) 2025 Brian Njuguna
@@ -222,4 +225,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+<<<<<<< HEAD
 >>>>>>> 706b3f1ef97eb04e1f92404ddd8358ca6c5e3849
+=======
+>>>>>>> 480813af935123b2c7646eaec0b0181d84b0f4fb
